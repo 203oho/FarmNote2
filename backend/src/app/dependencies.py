@@ -1,13 +1,10 @@
 
 
-from fastapi import Header, HTTPException
-from typing import Optional
-import uuid
+from fastapi import HTTPException
 
-def get_session_token(session_token: Optional[str] = Header(None)) -> str:
-    if session_token is None:
-        # Generate a new session token if not provided
-        session_token = str(uuid.uuid4())
-    return session_token
-
+def get_session_token(token: str):
+    valid_token = "FHXIKD"
+    if token != valid_token:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return token
 

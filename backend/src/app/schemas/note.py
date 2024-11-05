@@ -1,24 +1,19 @@
-
+# schemas/note.py
 from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
-
-from pydantic import BaseModel
 from typing import Optional
 
 class NoteBase(BaseModel):
-    title: str
     content: str
-    location: Optional[str] = None
-    category: Optional[str] = None
+    latitude: float
+    longitude: float
+    temperature: float
 
-class NoteCreate(NoteBase):
-    pass  # You can add any additional fields if needed
 
 class Note(NoteBase):
     id: int
-    created_at: datetime
+    session_id: int
+    creation_date: datetime
+    updated_date: datetime
 
-
-
-
+    model_config = {'from attributes': True}
