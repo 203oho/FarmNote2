@@ -29,7 +29,8 @@ def test_create_note_success():
                             json={
                                 'content': 'My first note',
                                 'latitude': 48.1271,
-                                'longitude': 15.1247
+                                'longitude': 15.1247,
+                                'temperature': 18.3
                             }, params={
                                 'token': test_token
                             }
@@ -43,6 +44,7 @@ def test_create_note_success():
     assert x['content'] == 'My first note'
     assert x['latitude'] == 48.1271
     assert x['longitude'] == 15.1247
+    assert x['temperature'] == 18.3
     assert x['id'] >= 0, 'note id should be greater or equal than 0'
     assert x['session_id'] >= 0, 'session id should be greater or equal than 0'
     assert (parse_datetime(x['creation_date']) > (datetime.utcnow() - timedelta(minutes=1))) == True, 'creation_date should be the current time'
@@ -60,7 +62,7 @@ def test_read_notes_success():
 
     assert response.status_code == 200
     assert len(json_result) == 1, 'only one note should be returned'
-    assert all([json_result[0][x] == y for x, y in zip(['content', 'latitude', 'longitude'], ['My first note', 48.1271, 15.1247])])
+    assert all([json_result[0][x] == y for x, y in zip(['content', 'latitude', 'longitude', 'temperature'], ['My first note', 48.1271, 15.1247,18.3])])
 
 
 def test_read_notes_token_not_found():
@@ -86,6 +88,7 @@ def test_read_note_success():
     assert json_result['content'] == 'My first note'
     assert json_result['latitude'] == 48.1271
     assert json_result['longitude'] == 15.1247
+    assert json_result['temperature'] == 18.3
 
 
 def test_something():
@@ -113,7 +116,8 @@ def test_update_note_success():
                               json={
                                   'content': 'Update',
                                   'latitude': 48.5,
-                                  'longitude': 15.4
+                                  'longitude': 15.4,
+                                  'temperature': 12.7
                               },
                               params={
                                   'token': test_token
@@ -126,6 +130,7 @@ def test_update_note_success():
     assert json_result['content'] == 'Update'
     assert json_result['latitude'] == 48.5
     assert json_result['longitude'] == 15.4
+    assert json_result['temperature'] == 12.7
 
     response = client.get(f'/notes/{test_note_id}',
                               params={
@@ -139,6 +144,7 @@ def test_update_note_success():
     assert json_result['content'] == 'Update'
     assert json_result['latitude'] == 48.5
     assert json_result['longitude'] == 15.4
+    assert json_result['temperature'] == 12.7
 
 
 def test_update_note_token_not_found():
@@ -146,7 +152,8 @@ def test_update_note_token_not_found():
                               json={
                                   'content': 'Update',
                                   'latitude': 48.5,
-                                  'longitude': 15.4
+                                  'longitude': 15.4,
+                                  'temperature': 15.2
                               },
                               params={
                                   'token': invalid_test_token
@@ -161,7 +168,8 @@ def test_update_note_not_found():
                               json={
                                   'content': 'Update',
                                   'latitude': 48.5,
-                                  'longitude': 15.4
+                                  'longitude': 15.4,
+                                  'temperature': 14.9
                               },
                               params={
                                   'token': test_token
