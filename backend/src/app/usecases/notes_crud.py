@@ -1,62 +1,99 @@
-
 from datetime import datetime
 from typing import List, Optional
-from app.schemas.note import Note, NoteBase
+import datetime
+from ..schemas import NoteBase, Note
 
-# Temporary in-memory database
-__FAKE_DB_NOTES = []
+# Initialize __FAKE_DB_NOTES as a dictionary with tokens as keys
+__FAKE_DB_NOTES = {
+    "token1": [],
+    "token2": [],
+}
+note_id_counter = 1
 
-def create_note(note_data: NoteBase) -> Note:
+
+def create_example_notes():
+    """
+    Return a list of example notes.
+    """
+    notes = [
+        Note(
+            id=0,
+            session_id=0,
+            content='Hello World',
+            latitude=48.1271,
+            longitude=15.1247,
+            temperature=15.3,
+            creation_date=datetime.datetime.utcnow(),
+            updated_date=datetime.datetime.utcnow(),
+        ),
+        Note(
+            id=1,
+            session_id=0,
+            content='Example Note 2',
+            latitude=48.21,
+            longitude=15.125,
+            temperature=18.3,
+            creation_date=datetime.datetime.utcnow(),
+            updated_date=datetime.datetime.utcnow(),
+        )
+    ]
+    return notes
+
+
+def create_note(note_data: NoteBase, token: str) -> Note:
+    global note_id_counter
+
+    # Ensure the token key exists in the fake database
+    if token not in __FAKE_DB_NOTES:
+        __FAKE_DB_NOTES[token] = []
+
     new_note = Note(
-        id=len(__FAKE_DB_NOTES),  # using the current list length as a simple ID generator
+        id=note_id_counter,
         session_id=1,
         content=note_data.content,
         latitude=note_data.latitude,
         longitude=note_data.longitude,
         temperature=note_data.temperature,
-        creation_date=datetime.utcnow(),
-        updated_date=datetime.utcnow(),
+        creation_date=datetime.datetime.now(),
+        updated_date=datetime.datetime.now(),
     )
-    __FAKE_DB_NOTES.append(new_note)
+
+    __FAKE_DB_NOTES[token].append(new_note)
+    note_id_counter += 1
     return new_note
 
-def read_notes() -> List[Note]:
-    return [note for note in __FAKE_DB_NOTES]
 
-def read_note(note_id: int) -> Optional[Note]:
-    for note in __FAKE_DB_NOTES:
-        if note.id == note_id:
-            return note
-    return None
+def read_notes(token: str) -> list:
+    return __FAKE_DB_NOTES.get(token, [])  # Return an empty list if the token is not found
 
-def get_note(note_id: int):
-    return find_my_note_by_id(note_id)
 
-def find_my_note_by_id(note_id: int):
-    return next((note for note in __FAKE_DB_NOTES if note.id == note_id), None)
+def get_note(note_id: int, token: str) -> Optional[Note]:
+    return next((note for note in __FAKE_DB_NOTES.get(token, []) if note.id == note_id), None)
 
-def update_note(note_id: int, updated_data: NoteBase) -> Optional[Note]:
-    for index, note in enumerate(__FAKE_DB_NOTES):
-        if note.id == note_id:
-            updated_note = Note(
-                id=note.id,
-                session_id=note.session_id,
-                content=updated_data.content or note.content,
-                latitude=updated_data.latitude or note.latitude,
-                longitude=updated_data.longitude or note.longitude,
-                temperature=updated_data.temperature or note.temperature,
-                creation_date=note.creation_date,
-                updated_date=datetime.utcnow(),
-            )
-            __FAKE_DB_NOTES[index] = updated_note
-            return updated_note
-    return None
 
-def delete_note(note_id: int):
-    note = find_my_note_by_id(note_id)
+def read_note(note_id: int, token: str) -> Optional[Note]:
+    return get_note(note_id, token)
+
+
+def update_note(note_id: int, updated_note_data: NoteBase, token: str) -> Optional[Note]:
+    note = get_note(note_id, token)
+    if note is None:
+        return None
+
+
+    note.content = updated_note_data.content or note.content
+    note.latitude = updated_note_data.latitude or note.latitude
+    note.longitude = updated_note_data.longitude or note.longitude
+    note.temperature = updated_note_data.temperature or note.temperature
+    note.updated_date = datetime.datetime.now()
+
+    return note
+
+
+def delete_note(note_id: int, token: str) -> bool:
+    note = get_note(note_id, token)
     if note is None:
         return False
 
-    global __FAKE_DB_NOTES
-    __FAKE_DB_NOTES= [n for n in __FAKE_DB_NOTES if n.id != note_id]
+    __FAKE_DB_NOTES[token] = [n for n in __FAKE_DB_NOTES[token] if n.id != note_id]
     return True
