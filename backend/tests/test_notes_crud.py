@@ -91,7 +91,7 @@ def test_read_note_success():
     assert json_result['temperature'] == 18.3
 
 
-def test_something():
+def test_token_response():
     response = client.get(f'/notes/{test_note_id}',
                            params={
                                 'token': invalid_test_token
@@ -215,3 +215,20 @@ def test_delete_note_token_not_found():
                            )
 
     assert response.status_code == 401, 'should return status code 401 - invalid token'
+
+
+def test_create_note_invalid_scheme():
+
+    response = client.post(
+        '/notes/',
+        json={
+            'content': 'My first note',
+            'herbert': 99,
+            'latitude': 18.5,
+
+        },
+        params={
+            'token': test_token
+        }
+    )
+    assert response.status_code == 422, "Expected 422 Unprocessable Entity for invalid schema"
