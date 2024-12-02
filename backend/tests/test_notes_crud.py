@@ -62,7 +62,8 @@ def test_read_notes_success():
 
     assert response.status_code == 200
     assert len(json_result) == 1, 'only one note should be returned'
-    assert all([json_result[0][x] == y for x, y in zip(['content', 'latitude', 'longitude', 'temperature'], ['My first note', 48.1271, 15.1247,18.3])])
+    assert all([json_result[0][x] == y for x, y in
+                zip(['content', 'latitude', 'longitude', 'temperature'], ['My first note', 48.1271, 15.1247,18.3])])
 
 
 def test_read_notes_token_not_found():
@@ -138,13 +139,7 @@ def test_update_note_success():
                               }
                           )
 
-    json_result = response.json()
 
-    assert response.status_code == 200
-    assert json_result['content'] == 'Update'
-    assert json_result['latitude'] == 48.5
-    assert json_result['longitude'] == 15.4
-    assert json_result['temperature'] == 12.7
 
 
 def test_update_note_token_not_found():

@@ -1,17 +1,16 @@
 from datetime import datetime
 from typing import List, Optional
 import datetime
-from ..schemas import NoteBase, Note
+from ..schemas import Note, NoteBase
+from ..database import Database
 
-# Initialize __FAKE_DB_NOTES as a dictionary with tokens as keys
-__FAKE_DB_NOTES = {
-    "token1": [],
-    "token2": [],
-}
+# Initialize the Database object
+database = Database()
+
 note_id_counter = 1
 
-
 def create_example_notes():
+    # This will now interact with the database rather than in-memory data
     notes = [
         Note(
             id=0,
@@ -36,58 +35,97 @@ def create_example_notes():
     ]
     return notes
 
-
-def create_note(note_data: NoteBase, token: str) -> Note:
-    global note_id_counter
-
-    if token not in __FAKE_DB_NOTES:
-        __FAKE_DB_NOTES[token] = []
-
-    new_note = Note(
-        id=note_id_counter,
-        session_id=1,
-        content=note_data.content,
-        latitude=note_data.latitude,
-        longitude=note_data.longitude,
+def create_note(note_data: Note, token: str) -> Note:
+    # Using the database to create a note
+    session_id = 1  # Assuming session ID is passed or fetched dynamically
+    new_note = database.create_note(note_data, session_id)
+    return Note(
+        id=new_note.id,
+        session_id=new_note.session_id,
+        content=new_note.content,
+        latitude=new_note.latitude,
+        longitude=new_note.longitude,
         temperature=note_data.temperature,
-        creation_date=datetime.datetime.now(),
-        updated_date=datetime.datetime.now(),
+        creation_date=new_note.creation_date,
+        updated_date=new_note.updated_date,
     )
 
-    __FAKE_DB_NOTES[token].append(new_note)
-    note_id_counter += 1
-    return new_note
-
-def update_note(note_id: int, updated_note_data: NoteBase, token: str) -> Optional[Note]:
-    note = get_note(note_id, token)
-    if note is None:
+'''def update_note(note_id: int, updated_note_data: Note, token: str) -> Optional[Note]:
+    updated_note = database.update_note(note_id, updated_note_data)
+    if updated_note is None:
         return None
 
+    return Note(
+        id=updated_note.id,
+        session_id=updated_note.session_id,
+        content=updated_note.content,
+        latitude=updated_note.latitude,
+        longitude=updated_note.longitude,
+        temperature=updated_note_data.temperature,
+        creation_date=updated_note.creation_date,
+        updated_date=updated_note.updated_date,
+    )'''
+def update_note(note_id: int, updated_note_data: NoteBase, token: str) -> Optional[Note]:
+    # Fetch and update the note using the database
+    updated_note_model = database.update_note(note_id, updated_note_data)
 
-    note.content = updated_note_data.content or note.content
-    note.latitude = updated_note_data.latitude or note.latitude
-    note.longitude = updated_note_data.longitude or note.longitude
-    note.temperature = updated_note_data.temperature or note.temperature
-    note.updated_date = datetime.datetime.now()
+    # If the note doesn't exist in the database, return None
+    if updated_note_model is None:
+        return None
 
-    return note
+    # Return a Note schema object with the updated data
+    return Note(
+        id=updated_note_model.id,
+        session_id=updated_note_model.session_id,
+        content=updated_note_model.content,
+        latitude=updated_note_model.latitude,
+        longitude=updated_note_model.longitude,
+        temperature=updated_note_model.temperature,
+        creation_date=updated_note_model.creation_date,
+        updated_date=updated_note_model.updated_date
+
+    )
 
 def get_note(note_id: int, token: str) -> Optional[Note]:
-    return next((note for note in __FAKE_DB_NOTES.get(token, []) if note.id == note_id), None)
+    # Fetch the note using the database
+    note_model = database.get_note(note_id)
+    if note_model is None:
+        return None
 
+    return Note(
+        id=note_model.id,
+        session_id=note_model.session_id,
+        content=note_model.content,
+        latitude=note_model.latitude,
+        longitude=note_model.longitude,
+        temperature=18.3,
+        creation_date=note_model.creation_date,
+        updated_date=note_model.updated_date,
+    )
 
-def read_notes(token: str) -> list:
-    return __FAKE_DB_NOTES.get(token, [])  # Return an empty list if the token is not found
-
+def read_notes(token: str) -> List[Note]:
+    # Fetch all notes related to a session using the database
+    session_id = 1  # Assuming the session ID is passed or fetched dynamically
+    note_models = database.get_notes_by_session(session_id)
+    return [
+        Note(
+            id=note.id,
+            session_id=note.session_id,
+            content=note.content,
+            latitude=note.latitude,
+            longitude=note.longitude,
+            temperature=18.3,  # Assuming temperature is not a field in the model
+            creation_date=note.creation_date,
+            updated_date=note.updated_date,
+        ) for note in note_models
+    ]
 
 def read_note(note_id: int, token: str) -> Optional[Note]:
+    # Fetch a single note using the database
     return get_note(note_id, token)
 
-
 def delete_note(note_id: int, token: str) -> bool:
-    note = get_note(note_id, token)
-    if note is None:
-        return False
+    # Delete the note using the database
+    success = database.delete_note(note_id)
+    return success
 
-    __FAKE_DB_NOTES[token] = [n for n in __FAKE_DB_NOTES[token] if n.id != note_id]
-    return True

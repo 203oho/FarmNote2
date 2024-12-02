@@ -10,6 +10,7 @@ class NoteBase(BaseModel):
     temperature: float
 
 
+
 class Note(NoteBase):
     id: int
     session_id: int
