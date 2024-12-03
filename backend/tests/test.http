@@ -1,0 +1,41 @@
+POST http://127.0.0.1:8000/notes/?token=FHXIKD
+Content-Type: application/json
+
+{
+    "content": "test1",
+    "latitude": -61.2,
+    "longitude": 113.4,
+    "temperature": 22.4
+
+}
+
+###
+GET http://127.0.0.1:8000/notes/?token=FHXIKD
+
+###
+GET http://127.0.0.1:8000/notes/2?token=FHXIKD
+
+###
+DELETE http://127.0.0.1:8000/notes/22?token=FHXIKD
+
+###
+PUT http://127.0.0.1:8000/notes/2?token=FHXIKD
+Content-Type: application/json
+
+{
+    "title": "another",
+    "content": "test2",
+    "latitude": 3.0,
+    "longitude": 4.3,
+    "temperature": 22.4
+
+}
+
+###
+POST http://127.0.0.1:8000/session/
+
+###
+POST http://127.0.0.1:8000/session/join/FHXIKD
+
+###
+GET http://127.0.0.1:8000/session/

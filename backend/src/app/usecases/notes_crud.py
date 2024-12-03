@@ -46,8 +46,8 @@ def create_session(token: str):
     session = db.create_session(token)
     return session
 
-def get_session(token: str):
-    return db.get_session_by_token(token)
+def get_session():
+    return db.get_session()
 
 def join_session(token: str):
     return db.join_session(token)

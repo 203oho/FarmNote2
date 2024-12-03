@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
 from app.models import Base, SessionModel, NoteModel
+from app.schemas import Session
 
 
 class Database:
@@ -26,6 +27,10 @@ class Database:
             return None
         notes = self.session.query(NoteModel).filter(NoteModel.session_id == session_id).all()
         return notes
+
+    def get_sessions(self):
+        session = self.session.query(SessionModel).all()
+        return [Session.Session(id=ses.id, token=ses.token) for ses in session]
 
     def get_session_by_token(self, token: str):
         return self.session.query(SessionModel).filter_by(token=token).first()

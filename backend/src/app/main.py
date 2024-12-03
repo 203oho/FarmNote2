@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .routers import notes_router
+from .routers import notes_router, session_router
 
 
 app = FastAPI(
@@ -34,3 +34,5 @@ app.add_middleware(
 )
 
 app.include_router(notes_router)
+
+app.include_router(session_router)
