@@ -14,9 +14,10 @@ class NoteModel(Base):
     session_id = Column(Integer, ForeignKey('sessions.index'), nullable=False)  # ForeignKey to sessions table
     creation_date = Column(DateTime, default=datetime.utcnow)  # Set default to current time
     updated_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # Automatically updated
-    latitude = Column(Float)
-    longitude = Column(Float)
+    latitude = Column(Float, nullable=True)  # Allow null latitude (nullable)
+    longitude = Column(Float, nullable=True)  # Allow null longitude (nullable)
     content = Column(String, nullable=False)  # Ensure content is required
+    temperature = Column(Float, nullable=False)
 
     # Define the relationship to SessionModel
     session = relationship('SessionModel', back_populates='notes')  # Assuming back_populates is defined in SessionModel
@@ -31,5 +32,3 @@ class SessionModel(Base):
 
     # Define the relationship to NoteModel
     notes = relationship('NoteModel', back_populates='session')  # Connect notes to session (bidirectional)
-
-

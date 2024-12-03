@@ -1,11 +1,11 @@
-from typing import List, Iterator
+from datetime import datetime
+from typing import List
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from win32ctypes.pywin32.pywintypes import datetime
-
 from app.models.dbnotemodel import SessionModel, NoteModel, Base
 from app.schemas import Note
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
 
 class Database:
@@ -22,6 +22,11 @@ class Database:
     def create_sesh(self, token: str) -> None:
         """Create a new session for a given token."""
         with self.get_session() as session:
+            # Check if the session already exists
+            existing_session = session.query(SessionModel).filter(SessionModel.token == token).first()
+            if existing_session:
+                print(f"DB: Session with token {token} already exists")
+                return  # If the session already exists, we do nothing
             new_session = SessionModel(token=token)
             session.add(new_session)
             session.commit()
@@ -37,6 +42,7 @@ class Database:
                 longitude=note_data.longitude,
                 creation_date=datetime.now(),
                 updated_date=datetime.now(),
+                temperature=note_data.temperature,
             )
             session.add(new_note)
             session.commit()
@@ -49,14 +55,13 @@ class Database:
         with self.get_session() as session:
             note = session.query(NoteModel).filter(NoteModel.id == note_id).first()
             if not note:
-                print(f"DB: Note with ID {note_id} not found")
-                return None  # Note not found
+                raise HTTPException(status_code=404, detail=f"Note with ID {note_id} not found")
 
-            # Update fields with the provided data
             note.content = note_data.content or note.content
+            note.temperature = note_data.temperature or note.temperature
             note.latitude = note_data.latitude or note.latitude
             note.longitude = note_data.longitude or note.longitude
-            note.updated_date = note_data.updated_date or note.updated_date
+            note.updated_date = note_data.updated_date or datetime.now()  # Ensure we set a valid updated date
 
             session.commit()
             session.refresh(note)  # Get the updated note

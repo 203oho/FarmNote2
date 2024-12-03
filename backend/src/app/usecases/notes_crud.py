@@ -50,30 +50,14 @@ def create_note(note_data: Note, token: str) -> Note:
         updated_date=new_note.updated_date,
     )
 
-'''def update_note(note_id: int, updated_note_data: Note, token: str) -> Optional[Note]:
-    updated_note = database.update_note(note_id, updated_note_data)
-    if updated_note is None:
-        return None
 
-    return Note(
-        id=updated_note.id,
-        session_id=updated_note.session_id,
-        content=updated_note.content,
-        latitude=updated_note.latitude,
-        longitude=updated_note.longitude,
-        temperature=updated_note_data.temperature,
-        creation_date=updated_note.creation_date,
-        updated_date=updated_note.updated_date,
-    )'''
-def update_note(note_id: int, updated_note_data: NoteBase, token: str) -> Optional[Note]:
-    # Fetch and update the note using the database
-    updated_note_model = database.update_note(note_id, updated_note_data)
-
-    # If the note doesn't exist in the database, return None
+def update_note(note_id: int, note_data: Note, token: str) -> Optional[Note]:
+    # Simulate updated_date being added by the database
+    updated_note_model = database.update_note(note_id, note_data)
     if updated_note_model is None:
         return None
 
-    # Return a Note schema object with the updated data
+    # Ensure updated_date is always included when returning the Note
     return Note(
         id=updated_note_model.id,
         session_id=updated_note_model.session_id,
@@ -82,9 +66,10 @@ def update_note(note_id: int, updated_note_data: NoteBase, token: str) -> Option
         longitude=updated_note_model.longitude,
         temperature=updated_note_model.temperature,
         creation_date=updated_note_model.creation_date,
-        updated_date=updated_note_model.updated_date
-
+        updated_date=updated_note_model.updated_date or datetime.utcnow()  # Default to current time if None
     )
+
+
 
 def get_note(note_id: int, token: str) -> Optional[Note]:
     # Fetch the note using the database
