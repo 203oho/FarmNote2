@@ -32,8 +32,8 @@ def update_note(note_id: int, updated_note_data: NoteBase, token: str):
         note.content = updated_note_data.content
         note.latitude = updated_note_data.latitude
         note.longitude = updated_note_data.longitude
-        note.weather_condition = updated_note_data.weather_condition
         note.updated_date = datetime.datetime.now()
+        note.temperature = updated_note_data.temperature
         db.update_note(note)
         return note
     return None

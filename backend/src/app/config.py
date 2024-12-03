@@ -7,6 +7,7 @@ class Settings(BaseSettings):
 
     frontend_url: str = "http://127.0.0.1:5173"
 
+    database_url: str = "sqlite:///./notes.db"
 
     model_config = SettingsConfigDict(env_file='.env')
 

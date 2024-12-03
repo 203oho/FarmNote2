@@ -1,5 +1,7 @@
 import os
 import sys
+if os.path.exists('notes.db'):
+    os.remove('notes.db')
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../src'))
 
