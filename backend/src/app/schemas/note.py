@@ -5,11 +5,9 @@ from typing import Optional
 
 class NoteBase(BaseModel):
     content: str
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: float
+    longitude: float
     temperature: float
-    updated_date: Optional[datetime] = None  # Make this field optional
-
 
 
 class Note(NoteBase):
@@ -19,5 +17,3 @@ class Note(NoteBase):
     updated_date: datetime
 
     model_config = {'from attributes': True}
-
-
