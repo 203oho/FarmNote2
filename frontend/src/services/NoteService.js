@@ -1,5 +1,7 @@
 import {NotesApi} from "http-client";
 import SessionService from "@/services/SessionService.js";
+import {ref} from "vue";
+
 
 
 
@@ -21,22 +23,23 @@ class NoteService {
         return SessionService.getToken().then((token) => {
             console.log("Request with token: " + token)
             return this.notesApi.createNote({
-                token: token,
-                noteCreate: note
-            }, request => {
-                return {
-                    ...request.init,
-                    body: {
-                        ...request.init.body,
-                        temperature: note.temperature
-                    }}}
-
-                    );
+                    token: token,
+                    noteCreate: note
+                }, request => {
+                    return {
+                        ...request.init,
+                        body: {
+                            ...request.init.body,
+                            temperature: note.temperature
+                        }
+                    }
+                }
+            );
         });
     }
 
 
-    async getNote(id){
+    async getNote(id) {
         return SessionService.getToken().then((token) => {
             console.log("Request with token: " + token)
             return this.notesApi.readNote({
@@ -46,7 +49,7 @@ class NoteService {
         });
     }
 
-    async deleteNote(id){
+    async deleteNote(id) {
         return SessionService.getToken().then((token) => {
             console.log("Request with token: " + token)
             return this.notesApi.deleteNote({
@@ -56,17 +59,33 @@ class NoteService {
         });
     }
 
-     async updateNote(id, newNote){
+    async updateNote(id, noteData, updatetemperature) {
         return SessionService.getToken().then((token) => {
-            console.log("Request with token: " + token)
-            return this.notesApi.updateNote({
+            console.log(token)
+            console.log(id)
+            console.log(updatetemperature)
+            const requestParameters = {
                 token: token,
                 noteId: id,
-                 noteUpdate: newNote
-            });
+                noteUpdate: noteData // noteData should be of type NoteUpdate
+            };
+            return this.notesApi.updateNote(
+                requestParameters,
+                request => {
+                    return {
+                        ...request.init,
+                        body: {
+                            ...request.init.body,
+                            temperature: updatetemperature.value
+                        }
+                    }
+                }
+            )
+                .then(note => {
+                    return note;
+                });
         });
     }
-
 }
 
 export default new NoteService();

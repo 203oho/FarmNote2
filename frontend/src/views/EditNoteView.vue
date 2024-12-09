@@ -4,15 +4,18 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import noteService from "@/services/NoteService.js";
 import NoteService from "@/services/NoteService.js";
 import Map from "@/components/Map.vue";
+import {ref} from "vue";
+const updatetemperature= ref(0);
 
 export default {
   components: {FontAwesomeIcon, ShareButton, Map},
   data() {
     return {
       note: {},
-      Temperature: []
+
     };
   },
+
   mounted() {
     noteService.getNote(this.$route.params.id).then((note) => {
       this.note = note
@@ -20,11 +23,13 @@ export default {
   },
   methods: {
     saveNote() {
-      NoteService.updateNote(this.note.id, this.note).then(() => {
+      console.log(this.note)
+      NoteService.updateNote(this.note.id, this.note, this.temperature).then(() => {
         this.$toast.open({message: "Saved!", duration: 3000});
         this.$router.go(0); //reload page for update date to refresh
       }).catch((error)=>{
-            this.$toast.open({message: "Error: "+error.response.statusText, duration: 5000, type:"error"});
+            this.$toast.open({message: "Error: "+error, duration: 5000, type:"error"});
+            console.log(error)
         });
     },
     deleteNote() {
@@ -95,7 +100,18 @@ export default {
       placeholder="Note Description"
   />
   </div>
-
+    <!-- Temperature Input -->
+    <div class="section">
+      <label for="temperature">Temperature (°C)</label>
+      <input
+        id="temperature"
+        class="temperature-input"
+        v-model="temperature"
+        placeholder="Enter temperature"
+        type="number"
+        step="0.1"
+      />
+    </div>
 
   <Map :lat="this.note.latitude" :lng="this.note.longitude"></Map>
 

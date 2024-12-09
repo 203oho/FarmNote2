@@ -13,6 +13,7 @@
  */
 
 import { mapValues } from '../runtime';
+
 /**
  * Schema for updating an existing note
  * @export
@@ -20,23 +21,29 @@ import { mapValues } from '../runtime';
  */
 export interface NoteUpdate {
     /**
-     * 
+     *
      * @type {string}
      * @memberof NoteUpdate
      */
     content: string;
     /**
-     * 
+     *
      * @type {number}
      * @memberof NoteUpdate
      */
     latitude: number;
     /**
-     * 
+     *
      * @type {number}
      * @memberof NoteUpdate
      */
     longitude: number;
+    /**
+     * Temperature value associated with the note
+     * @type {number}
+     * @memberof NoteUpdate
+     */
+    temperature: number;
 }
 
 /**
@@ -46,6 +53,8 @@ export function instanceOfNoteUpdate(value: object): value is NoteUpdate {
     if (!('content' in value) || value['content'] === undefined) return false;
     if (!('latitude' in value) || value['latitude'] === undefined) return false;
     if (!('longitude' in value) || value['longitude'] === undefined) return false;
+    if (!('temperature' in value) || value['temperature'] === undefined) return false;
+
     return true;
 }
 
@@ -58,10 +67,10 @@ export function NoteUpdateFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         return json;
     }
     return {
-        
         'content': json['content'],
         'latitude': json['latitude'],
         'longitude': json['longitude'],
+        'temperature': json['temperature'],
     };
 }
 
@@ -70,10 +79,9 @@ export function NoteUpdateToJSON(value?: NoteUpdate | null): any {
         return value;
     }
     return {
-        
         'content': value['content'],
         'latitude': value['latitude'],
         'longitude': value['longitude'],
+        'temperature': value['temperature'],
     };
 }
-

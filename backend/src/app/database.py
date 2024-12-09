@@ -90,6 +90,7 @@ class Database:
     def update_note(self, note: NoteModel):
         self.session.commit()
 
+
     def delete_note_by_id_and_token(self, note_id: int, token: str):
         note = self.get_note_by_id_and_token(note_id, token)
         if note:
