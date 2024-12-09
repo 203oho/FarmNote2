@@ -20,6 +20,7 @@ def create_note(note: NoteBase, token: str = Depends(dependencies.validation_tok
 
 @router.get("/", response_model=List[Note], operation_id='readNotes', description='Return all notes.')
 def read_notes(token: str = Depends(dependencies.validation_token)):
+    print(token, "id")
     try:
         notes = usecases.read_notes(token)
         return notes

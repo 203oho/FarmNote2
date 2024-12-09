@@ -4,6 +4,17 @@ from app.config import settings
 from app.models import Base, SessionModel, NoteModel
 from app.schemas import Session
 
+def de_database_ify(note: NoteModel | None) -> dict:
+    return {
+        "id": note.id,
+        "session_id": note.session_id,
+        "content": note.content,
+        "latitude": note.latitude,
+        "longitude": note.longitude,
+        "creation_date": note.creation_date,
+        "updated_date": note.updated_date,
+        "temperature": note.temperature
+    } if note is not None else None
 
 class Database:
     def __init__(self):
@@ -52,6 +63,7 @@ class Database:
 
     def add_note_to_session(self, note: NoteModel, token: str):
         session = self.get_session_by_token(token)
+        print(note)
         if session:
             note.session_id = session.id
             self.session.add(note)
@@ -60,10 +72,14 @@ class Database:
         return None
 
     def get_notes_by_token(self, token: str):
+        print("token", token)
         session = self.get_session_by_token(token)
+        print("Herbert",session)
         if session:
-            return self.session.query(NoteModel).filter_by(session_id=session.id).all()
-        return None
+            print(self.session.query(NoteModel).filter_by(session_id=session.id).all())
+
+            notes = self.session.query(NoteModel).filter_by(session_id=session.id).all()
+            return [de_database_ify(note) for note in notes]
 
     def get_note_by_id_and_token(self, note_id: int, token: str):
         session = self.get_session_by_token(token)

@@ -16,79 +16,51 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Note
+ * @interface NoteBase
  */
-export interface Note {
+export interface NoteBase {
     /**
      * 
      * @type {string}
-     * @memberof Note
+     * @memberof NoteBase
      */
     content: string;
     /**
      * 
      * @type {number}
-     * @memberof Note
+     * @memberof NoteBase
      */
     latitude: number;
     /**
      * 
      * @type {number}
-     * @memberof Note
+     * @memberof NoteBase
      */
     longitude: number;
     /**
      * 
      * @type {number}
-     * @memberof Note
+     * @memberof NoteBase
      */
     temperature: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Note
-     */
-    id: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Note
-     */
-    sessionId: number;
-    /**
-     * 
-     * @type {Date}
-     * @memberof Note
-     */
-    creationDate: Date;
-    /**
-     * 
-     * @type {Date}
-     * @memberof Note
-     */
-    updatedDate: Date;
 }
 
 /**
- * Check if a given object implements the Note interface.
+ * Check if a given object implements the NoteBase interface.
  */
-export function instanceOfNote(value: object): value is Note {
+export function instanceOfNoteBase(value: object): value is NoteBase {
     if (!('content' in value) || value['content'] === undefined) return false;
     if (!('latitude' in value) || value['latitude'] === undefined) return false;
     if (!('longitude' in value) || value['longitude'] === undefined) return false;
     if (!('temperature' in value) || value['temperature'] === undefined) return false;
-    if (!('id' in value) || value['id'] === undefined) return false;
-    if (!('sessionId' in value) || value['sessionId'] === undefined) return false;
-    if (!('creationDate' in value) || value['creationDate'] === undefined) return false;
-    if (!('updatedDate' in value) || value['updatedDate'] === undefined) return false;
     return true;
 }
 
-export function NoteFromJSON(json: any): Note {
-    return NoteFromJSONTyped(json, false);
+export function NoteBaseFromJSON(json: any): NoteBase {
+    return NoteBaseFromJSONTyped(json, false);
 }
 
-export function NoteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Note {
+export function NoteBaseFromJSONTyped(json: any, ignoreDiscriminator: boolean): NoteBase {
     if (json == null) {
         return json;
     }
@@ -98,14 +70,10 @@ export function NoteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Note
         'latitude': json['latitude'],
         'longitude': json['longitude'],
         'temperature': json['temperature'],
-        'id': json['id'],
-        'sessionId': json['session_id'],
-        'creationDate': (new Date(json['creation_date'])),
-        'updatedDate': (new Date(json['updated_date'])),
     };
 }
 
-export function NoteToJSON(value?: Note | null): any {
+export function NoteBaseToJSON(value?: NoteBase | null): any {
     if (value == null) {
         return value;
     }
@@ -115,10 +83,6 @@ export function NoteToJSON(value?: Note | null): any {
         'latitude': value['latitude'],
         'longitude': value['longitude'],
         'temperature': value['temperature'],
-        'id': value['id'],
-        'session_id': value['sessionId'],
-        'creation_date': ((value['creationDate']).toISOString()),
-        'updated_date': ((value['updatedDate']).toISOString()),
     };
 }
 

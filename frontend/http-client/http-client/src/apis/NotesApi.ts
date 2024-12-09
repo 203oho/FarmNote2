@@ -60,7 +60,7 @@ export interface UpdateNoteRequest {
 }
 
 /**
- *
+ * 
  */
 export class NotesApi extends runtime.BaseAPI {
 

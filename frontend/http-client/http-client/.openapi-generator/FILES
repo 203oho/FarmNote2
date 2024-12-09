@@ -6,9 +6,11 @@ src/apis/NotesApi.ts
 src/apis/SessionApi.ts
 src/apis/index.ts
 src/index.ts
+src/models/HTTPError.ts
 src/models/HTTPValidationError.ts
 src/models/Note.ts
-src/models/NoteBase.ts
+src/models/NoteCreate.ts
+src/models/NoteUpdate.ts
 src/models/Session.ts
 src/models/ValidationError.ts
 src/models/ValidationErrorLocInner.ts

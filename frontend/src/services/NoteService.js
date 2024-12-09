@@ -1,44 +1,72 @@
-// src/services/NoteService.js
-import axios from 'axios';
+import {NotesApi} from "http-client";
+import SessionService from "@/services/SessionService.js";
 
-const API_URL = 'http://127.0.0.1:8000/notes/';
 
-export default {
-  async getNotes() {
-    try {
-      const response = await axios.get(API_URL);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching notes:', error);
-      return [];
+
+class NoteService {
+    notesApi = new NotesApi();
+
+    async getAllNotes() {
+        return SessionService.getToken().then((token) => {
+            console.log("Request with token: " + token)
+            return this.notesApi.readNotes({
+                token: token
+            }).then(notes => {
+                return notes;
+            });
+        });
     }
-  },
 
-  async createNote(noteData) {
-    try {
-      const response = await axios.post(API_URL, noteData);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating note:', error);
-      return null;
-    }
-  },
+    async createNote(note) {
+        return SessionService.getToken().then((token) => {
+            console.log("Request with token: " + token)
+            return this.notesApi.createNote({
+                token: token,
+                noteCreate: note
+            }, request => {
+                return {
+                    ...request.init,
+                    body: {
+                        ...request.init.body,
+                        temperature: note.temperature
+                    }}}
 
-  async updateNote(noteId, updatedNoteData) {
-    try {
-      const response = await axios.put(`${API_URL}${noteId}`, updatedNoteData);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating note:', error);
-      return null;
+                    );
+        });
     }
-  },
 
-  async deleteNote(noteId) {
-    try {
-      await axios.delete(`${API_URL}${noteId}`);
-    } catch (error) {
-      console.error('Error deleting note:', error);
+
+    async getNote(id){
+        return SessionService.getToken().then((token) => {
+            console.log("Request with token: " + token)
+            return this.notesApi.readNote({
+                token: token,
+                noteId: id
+            });
+        });
     }
-  },
-};
+
+    async deleteNote(id){
+        return SessionService.getToken().then((token) => {
+            console.log("Request with token: " + token)
+            return this.notesApi.deleteNote({
+                token: token,
+                noteId: id
+            });
+        });
+    }
+
+     async updateNote(id, newNote){
+        return SessionService.getToken().then((token) => {
+            console.log("Request with token: " + token)
+            return this.notesApi.updateNote({
+                token: token,
+                noteId: id,
+                 noteUpdate: newNote
+            });
+        });
+    }
+
+}
+
+export default new NoteService();
