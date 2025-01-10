@@ -3,56 +3,56 @@ import NoteList from "@/components/NoteList.vue";
 import CreateButton from "@/components/CreateButton.vue";
 import Title from "@/components/Title.vue";
 import ShareButton from "@/components/ShareButton.vue";
-</script>
-
-<script>
 import NoteService from "@/services/NoteService.js";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-export default {
-  data() {
-    return {
-      isLoading: true,
-    };
-  },
-  mounted() {
-    if (this.$route.path.includes("join")) {
-      const token = this.$route.params.token;
+const isLoading = ref(true);
+const router = useRouter();
 
-      if (token?.length === 6) {
-        sessionStorage.setItem("token", token.toUpperCase());
-        NoteService.getAllNotes()
-          .then(() => {
-            this.$toast.open({
-              message: `Successfully joined with token: ${token}`,
-              duration: 3000,
-            });
-            this.$router.push("/home");
-          })
-          .catch(() => {
-            sessionStorage.removeItem("token");
-            this.$toast.open({
-              message: "Invalid Token",
-              duration: 3000,
-              type: "error",
-            });
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
-      } else {
-        sessionStorage.removeItem("token");
-        this.$toast.open({
-          message: "Invalid Token format!",
-          duration: 3000,
-          type: "error",
-        });
-        this.isLoading = false;
-      }
-    } else {
-      this.isLoading = false;
-    }
-  },
+const leaveSession = () => {
+  sessionStorage.removeItem("token");
+  router.push("/"); // Redirect to a homepage or login page after leaving the session
 };
+
+onMounted(() => {
+  if (router.currentRoute.value.path.includes("join")) {
+    const token = router.currentRoute.value.params.token;
+
+    if (token?.length === 6) {
+      sessionStorage.setItem("token", token.toUpperCase());
+      NoteService.getAllNotes()
+        .then(() => {
+          this.$toast.open({
+            message: `Successfully joined with token: ${token}`,
+            duration: 3000,
+          });
+          router.push("/home");
+        })
+        .catch(() => {
+          sessionStorage.removeItem("token");
+          this.$toast.open({
+            message: "Invalid Token",
+            duration: 3000,
+            type: "error",
+          });
+        })
+        .finally(() => {
+          isLoading.value = false;
+        });
+    } else {
+      sessionStorage.removeItem("token");
+      this.$toast.open({
+        message: "Invalid Token format!",
+        duration: 3000,
+        type: "error",
+      });
+      isLoading.value = false;
+    }
+  } else {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>
@@ -82,8 +82,15 @@ export default {
 
       <!-- Notes List -->
       <section class="notes-list-section">
-        <NoteList />
+        <NoteList :showDate="true" />
       </section>
+
+      <!-- Leave Session Button -->
+      <div class="leave-session-wrapper">
+        <button class="leave-session-button" @click="leaveSession">
+          Leave Session
+        </button>
+      </div>
     </div>
   </main>
 </template>
@@ -174,5 +181,27 @@ main {
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Leave Session Button */
+.leave-session-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.leave-session-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.leave-session-button:hover {
+  background-color: #c82333;
 }
 </style>
