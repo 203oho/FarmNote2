@@ -18,6 +18,7 @@ class NoteModel(Base):
     session = relationship('SessionModel', back_populates='notes')
     session_id = Column(Integer, ForeignKey('sessions.id'), nullable=False)
 
+
 class SessionModel(Base):
     __tablename__ = 'sessions'
     id = Column(Integer, primary_key=True, autoincrement=True)

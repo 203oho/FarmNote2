@@ -1,3 +1,4 @@
+
 class LocationService {
     getUserLocation(func) {
         let location = {lat: 1, lng: 2}

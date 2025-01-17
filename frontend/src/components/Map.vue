@@ -18,20 +18,22 @@ export default {
     return {
       map: null,
       view: null,
-      markerLayer: null
-    }
+      markerLayer: null,
+      socket: null, // Add socket property
+    };
   },
   mounted() {
     useGeographic();
     this.initMap();
     this.placeMarker();
+    this.setupWebsocket(); // Initialize WebSocket connection
   },
   methods: {
     initMap() {
       this.view = new View({
         center: [this.lng, this.lat],
         zoom: 2,
-      })
+      });
 
       this.map = new Map({
         target: this.$refs.mapContainer,
@@ -47,17 +49,17 @@ export default {
       const markerSource = new VectorSource();
 
       const markerFeature = new Feature({
-        geometry: new Point([this.lng, this.lat])
+        geometry: new Point([this.lng, this.lat]),
       });
 
       markerFeature.setStyle(
-          new Style({
-            image: new Icon({
-              anchor: [0.5, 1],
-              src: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-              scale: 0.1,
-            }),
-          })
+        new Style({
+          image: new Icon({
+            anchor: [0.5, 1],
+            src: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+            scale: 0.1,
+          }),
+        })
       );
 
       markerSource.addFeature(markerFeature);
@@ -69,7 +71,7 @@ export default {
       this.map.addLayer(this.markerLayer);
     },
     updateMapCenter() {
-      // focus on the note coordinates when the coordinates load
+      // Focus on the note coordinates when the coordinates load
       if (this.view) {
         this.view.setCenter([this.lng, this.lat]);
         this.view.setZoom(17);
@@ -81,12 +83,36 @@ export default {
         this.map.removeLayer(this.markerLayer);
       }
       this.placeMarker();
-    }
+    },
+    setupWebsocket() {
+      // const websocketURL = URLService.getWebSocketURL();
+      let websocketURL = "http://127.0.0.1:8000"
+      this.socket = new WebSocket(`${websocketURL}/notes/ws`);
+
+      this.socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("WebSocket event:", data.action);
+
+        if (["created", "updated", "deleted"].includes(data.action)) {
+          // Assuming the data contains new lat/lng for the marker
+          this.lng = data.lng; // Update lng from the received data
+          this.lat = data.lat; // Update lat from the received data
+          this.updateMapCenter(); // Update the map center and marker
+        }
+      };
+
+      this.socket.onopen = () => console.log("WebSocket connected");
+      this.socket.onclose = () => {
+        console.log("WebSocket disconnected. Reconnecting...");
+        setTimeout(this.setupWebsocket, 5000); // Automatic reconnection
+      };
+      this.socket.onerror = (error) => console.error("WebSocket error:", error);
+    },
   },
   watch: {
     lat: "updateMapCenter",
     lng: "updateMapCenter",
-  }
+  },
 };
 </script>
 

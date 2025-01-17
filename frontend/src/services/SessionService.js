@@ -1,4 +1,5 @@
-import {SessionApi} from "http-client";
+
+import {NotesApi} from "../../http-client";
 
 class SessionService {
     sessionApi = new SessionApi();
@@ -16,6 +17,10 @@ class SessionService {
     async joinSession(token) {
         const notes = await this.sessionApi.joinSession({token:token});
         return notes != null
+    }
+
+    getQRCodeUrl() {
+        return import.meta.env.VITE_API_URL; // API-Basis-URL
     }
 }
 

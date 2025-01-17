@@ -11,6 +11,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file='.env')
 
+    qr_code_url: str = "{frontend_url}/qr?token={token}"
 
 settings = Settings()
 """"""

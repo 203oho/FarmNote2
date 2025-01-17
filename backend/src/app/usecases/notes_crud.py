@@ -55,8 +55,6 @@ def join_session(token: str):
 
 def get_session_by_token(token: str):
     noteSessions = db.get_session_by_token(token)
-    if len(noteSessions) == 1:
-        return noteSessions
     return noteSessions
 
 

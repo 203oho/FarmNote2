@@ -3,7 +3,7 @@ import './assets/main.css'
 import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
-import {DefaultConfig} from "http-client";
+import {DefaultConfig} from "../http-client";
 import 'vuetify/dist/vuetify.min.css';
 import PrimeVue from 'primevue/config';
 import {Select} from "primevue";

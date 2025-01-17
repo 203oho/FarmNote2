@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from .config import settings
 from .routers import notes_router, session_router
+from .routers.notes import ConnectionManager
 
 
 app = FastAPI(
@@ -26,12 +26,16 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=[],  # "*"
     allow_origin_regex="^http://(127\.0\.0\.1|localhost)(:\d+)?.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+manager = ConnectionManager()
+app.state.manager = manager
+
 
 app.include_router(notes_router)
 

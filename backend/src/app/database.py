@@ -98,3 +98,8 @@ class Database:
             self.session.commit()
             return True
         return False
+
+    def get_sessions(self):
+        sessions = self.session.query(SessionModel).all()  # Abrufen aller Sessions
+        print(sessions)  # Debugging: Gibt die abgerufenen Sessions aus
+        return [Session(id=int(str(ses.id)), token=str(ses.token)) for ses in sessions]

@@ -1,4 +1,4 @@
-import {NotesApi} from "http-client";
+import {NotesApi} from "../../http-client";
 import SessionService from "@/services/SessionService.js";
 import {ref} from "vue";
 
