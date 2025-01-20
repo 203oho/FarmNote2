@@ -5,3 +5,4 @@ uvicorn[standard]
 sqlalchemy
 httpx
 pytest
+qrcode
