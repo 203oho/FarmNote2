@@ -32,7 +32,7 @@ jobs:
         if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
     - name: Lint with pylint
       run: |
-        pylint backend --fail-under 1
+        pylint backend --fail-under 2
     - name: Test with pytest
       run: |
         pytest
